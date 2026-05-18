@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = "https://employee-analytics-system-2.onrender.com";
+const API_URL = "https://employee-analytics-system.onrender.com/";
 
 export const AuthProvider = ({ children }) => {
 
