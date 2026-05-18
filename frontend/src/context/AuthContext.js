@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = "https://employee-analytics-system.onrender.com/";
+const API_URL = "https://employee-analytics-system.onrender.com";
 
 export const AuthProvider = ({ children }) => {
 
@@ -69,7 +69,8 @@ export const AuthProvider = ({ children }) => {
 
     setToken(res.data.token);
 
-    setUser(res.data.user);
+    const { token: _, ...userData } = res.data;
+    setUser(userData);
 
     return res.data;
   };
@@ -92,7 +93,8 @@ export const AuthProvider = ({ children }) => {
 
     setToken(res.data.token);
 
-    setUser(res.data.user);
+    const { token: _, ...userData } = res.data;
+    setUser(userData);
 
     return res.data;
   };
