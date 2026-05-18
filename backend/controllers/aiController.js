@@ -16,7 +16,6 @@ const getRecommendation = async (req, res, next) => {
     } else if (employeeIds && Array.isArray(employeeIds)) {
       employees = await Employee.find({ _id: { $in: employeeIds } });
     } else {
-      // If no specific employee, use all employees for ranking
       employees = await Employee.find().sort({ performanceScore: -1 });
     }
 
@@ -71,11 +70,10 @@ Respond in a structured way with clear sections.`;
 
     const data = await response.json();
 
+    // Return the real error message so we can debug
     if (!response.ok) {
-      return res.status(500).json({
-        message: 'AI API error',
-        error: data.error || data,
-      });
+      const errMsg = data?.error?.message || JSON.stringify(data);
+      return res.status(500).json({ message: errMsg });
     }
 
     const aiText = data.choices[0].message.content;
