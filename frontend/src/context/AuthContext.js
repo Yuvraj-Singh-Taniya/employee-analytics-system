@@ -3,52 +3,124 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
+const API_URL = "https://employee-analytics-system-2.onrender.com";
+
 export const AuthProvider = ({ children }) => {
+
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+
+  const [token, setToken] = useState(
+    localStorage.getItem('token') || null
+  );
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // Fetch current user
-      axios
-        .get('/api/auth/me')
-        .then((res) => setUser(res.data))
-        .catch(() => logout())
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+
+    const fetchUser = async () => {
+
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+
+        axios.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer ${token}`;
+
+        const res = await axios.get(
+          `${API_URL}/api/auth/me`
+        );
+
+        setUser(res.data);
+
+      } catch (error) {
+
+        logout();
+
+      } finally {
+
+        setLoading(false);
+
+      }
+    };
+
+    fetchUser();
+
   }, [token]);
 
   const login = async (email, password) => {
-    const res = await axios.post('/api/auth/login', { email, password });
-    localStorage.setItem('token', res.data.token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+
+    const res = await axios.post(
+      `${API_URL}/api/auth/login`,
+      { email, password }
+    );
+
+    localStorage.setItem(
+      'token',
+      res.data.token
+    );
+
+    axios.defaults.headers.common[
+      'Authorization'
+    ] = `Bearer ${res.data.token}`;
+
     setToken(res.data.token);
-    setUser(res.data);
+
+    setUser(res.data.user);
+
     return res.data;
   };
 
   const signup = async (name, email, password) => {
-    const res = await axios.post('/api/auth/signup', { name, email, password });
-    localStorage.setItem('token', res.data.token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+
+    const res = await axios.post(
+      `${API_URL}/api/auth/signup`,
+      { name, email, password }
+    );
+
+    localStorage.setItem(
+      'token',
+      res.data.token
+    );
+
+    axios.defaults.headers.common[
+      'Authorization'
+    ] = `Bearer ${res.data.token}`;
+
     setToken(res.data.token);
-    setUser(res.data);
+
+    setUser(res.data.user);
+
     return res.data;
   };
 
   const logout = () => {
+
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
+
+    delete axios.defaults.headers.common[
+      'Authorization'
+    ];
+
     setToken(null);
+
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        signup,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
