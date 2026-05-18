@@ -59,7 +59,7 @@ Respond in a structured way with clear sections.`;
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        'HTTP-Referer': 'http://localhost:3000',
+        'HTTP-Referer': process.env.FRONTEND_URL || 'https://employee-analytics-system-2.onrender.com',
         'X-Title': 'Employee Analytics App',
       },
       body: JSON.stringify({
